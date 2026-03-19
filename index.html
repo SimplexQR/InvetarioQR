@@ -398,9 +398,8 @@
             function authenticate() {
                 const password = passwordInput.value;
 
-                // Validación de longitud
                 if (password.length < 1 || password.length > 20) {
-                    showError(); // Hace temblar si está vacío o es muy largo
+                    showError(); 
                     return;
                 }
 
@@ -412,29 +411,31 @@
                     return;
                 }
 
-                // ACTIVAR ANIMACIÓN DE CARGA
                 submitBtn.classList.add('is-loading');
                 submitBtn.disabled = true;
-                inputGroup.classList.remove('is-invalid'); // Limpia errores previos
+                inputGroup.classList.remove('is-invalid'); 
 
-                // Llamada a Google Apps Script
+                const tiempoInicio = Date.now();
+
                 fetch(`${AS_URL_BASE}?k=${k}&q=${encodeURIComponent(password)}`)
                     .then(response => response.text())
                     .then(result => {
-                        // DETENER ANIMACIÓN DE CARGA
-                        submitBtn.classList.remove('is-loading');
-                        submitBtn.disabled = false;
+                        const tiempoTranscurrido = Date.now() - tiempoInicio;
+                        const tiempoRestante = Math.max(0, 1500 - tiempoTranscurrido);
 
-                        if (result) {
-                            // Si hay resultado (éxito), redirige a la URL
-                            document.location.replace(result);
-                        } else {
-                            // Acceso denegado (Reemplaza tu alert por el temblor rojo)
-                            showError(); 
-                        }
+                        setTimeout(() => {
+                            submitBtn.classList.remove('is-loading');
+                            submitBtn.disabled = false;
+
+                            // Solución al error 404: Solo redirige si es un enlace válido
+                            if (result && result.trim().startsWith("http")) {
+                                document.location.replace(result.trim());
+                            } else {
+                                showError(); 
+                            }
+                        }, tiempoRestante);
                     })
                     .catch(err => {
-                        // Error de conexión de red
                         submitBtn.classList.remove('is-loading');
                         submitBtn.disabled = false;
                         console.error("Error de conexión:", err);
