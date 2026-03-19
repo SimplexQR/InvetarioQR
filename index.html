@@ -1,127 +1,456 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="utf-8">
-  <style>
-    body {
-      background-color: #f5f5f5;
-      text-align: center;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center; 
-      min-height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPLEX PCs</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-    #logo {
-      width: 150px;
-      margin: 40px auto;
-    }
+        /* Variables CSS para facilitar cambios de diseño */
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg-color: transparent;
+            --primary-color: #2b75a1; /* Azul corporativo */
+            --text-color: #333333;
+            --placeholder-color: #8fa0b3;
+            --border-color: #c2c9d6;
+            --icon-left-bg: var(--primary-color);
+            --icon-color: #ffffff;
+            --input-bg: #ffffff;
+            --transition-speed: 0.3s;
+            --max-width-login: 22rem; /* Aprox 352px - Ancho ideal para lectura y móvil */
+        }
 
-    input[type="password"], button {
-      display: block;
-      width: 90vw;
-      max-width: 600px;
-      height: 60px;
-      font-size: 20px;
-      padding: 15px;
-      border: 2px solid black;
-      border-radius: 8px;
-      margin: 20px auto;
-      background-color: white;
-      color: black;
-    }
+        /* Reset básico para consistencia */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
 
-    button {
-      cursor: pointer;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
-    button:hover {
-      background-color: black;
-      color: white;
-    }
-    
-    .lds-ring {
-      display: none;
-      margin: 40px auto;
-      position: relative;
-    }
+        /* Envoltorio principal para asegurar centrado vertical y horizontal */
+        .main-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ocupa al menos toda la altura de la pantalla */
+            padding: 1rem; /* Margen de seguridad para pantallas pequeñas */
+        }
 
-    .lds-ring div {
-      box-sizing: border-box;
-      display: block;
-      position: relative;
-      width: 64px;
-      height: 64px;
-      margin: 8px auto;
-      border: 8px solid black;
-      border-radius: 50%;
-      animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-      border-color: black transparent transparent transparent;
-    }
+        .login-container {
+            background-color: var(--card-bg-color);
+            width: 100%;
+            max-width: var(--max-width-login);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: margin var(--transition-speed) ease;
+        }
 
-    .lds-ring div:nth-child(1) { animation-delay: -0.45s; }
-    .lds-ring div:nth-child(2) { animation-delay: -0.3s; }
-    .lds-ring div:nth-child(3) { animation-delay: -0.15s; }
+        /* --- ESTILOS DEL LOGO --- */
+        .logo {
+            width: 12rem; /* Tamaño relativo */
+            height: 12rem;
+            margin-bottom: 4rem; /* Gran margen entre logo y formulario */
+            transition: width var(--transition-speed) ease, height var(--transition-speed) ease, margin var(--transition-speed) ease;
+        }
 
-    @keyframes lds-ring {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Asegura que la imagen no se deforme */
+            filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.1)); /* Mantiene la sombra suave */
+        }
+
+        .login-form {
+            width: 100%;
+        }
+
+        /* --- ESTILOS DEL INPUT (FORMA DE PÍLDORA CON ÍCONO) --- */
+        .input-group {
+            display: flex;
+            align-items: center;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem; /* Forma de píldora */
+            padding: 0.25rem; /* Pequeño padding interno */
+            margin-bottom: 1.5rem;
+            transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(43, 117, 161, 0.1);
+        }
+
+        .icon-left {
+            background-color: var(--icon-left-bg);
+            color: var(--icon-color);
+            border-radius: 0.75rem; /* Forma ligeramente cuadrada/redondeada */
+            width: 2.5rem; /* Tamaño cuadrado */
+            height: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0; /* Evita que el ícono se encoja */
+        }
+
+        .icon-left svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        input {
+            border: none;
+            outline: none;
+            flex-grow: 1; /* Ocupa el espacio restante */
+            padding: 0 0.75rem;
+            font-size: 1rem; /* Base size */
+            color: var(--text-color);
+            background: transparent;
+        }
+
+        input::placeholder {
+            color: var(--placeholder-color);
+            opacity: 1; /* Necesario en algunos navegadores modernos */
+        }
+
+        .icon-right {
+            color: var(--placeholder-color);
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: color var(--transition-speed) ease;
+        }
+
+        .icon-right svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .icon-right:hover {
+            color: var(--primary-color);
+        }
+
+        /* --- ESTILOS DEL BOTÓN (FORMA DE PÍLDORA) --- */
+        .btn-submit {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 1.5rem; /* Forma de píldora completa */
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0px 8px 15px rgba(43, 117, 161, 0.3);
+            transition: transform 0.1s ease, box-shadow var(--transition-speed) ease, background-color var(--transition-speed) ease;
+        }
+
+        .btn-submit:hover {
+            box-shadow: 0px 10px 20px rgba(43, 117, 161, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(2px);
+            box-shadow: 0px 4px 10px rgba(43, 117, 161, 0.3);
+        }
+
+        /* ==========================================================
+        MEDIA QUERIES (RESPONSIVIDAD AVANZADA)
+        ========================================================== */
+
+        /* 1. MÓVILES EXTREMADAMENTE PEQUEÑOS (menos de 320px de ancho) */
+        @media (max-width: 320px) {
+            .main-wrapper {
+                padding: 0.5rem;
+            }
+            
+            .icon-left, .icon-right {
+                width: 2rem;
+                height: 2rem;
+            }
+            
+            input {
+                padding: 0 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .btn-submit {
+                padding: 0.75rem;
+            }
+        }
+
+        /* 2. PANTALLAS DE POCA ALTURA (por ejemplo, móviles en horizontal o portátiles pequeños) */
+        /* Este punto de quiebre asegura que el formulario permanezca centrado sin requerir scroll */
+        @media (max-height: 700px) {
+            .main-wrapper {
+                min-height: auto;
+                padding: 1rem 0;
+            }
+            
+            .login-container {
+                margin: 1rem 0; /* Añadir un pequeño margen superior/inferior */
+            }
+            
+            .logo {
+                width: 5rem;
+                height: 5rem;
+                margin-bottom: 2rem; /* Reducir el gran espacio */
+            }
+        }
+
+        /* ==========================================================
+        MODO OSCURO AUTOMÁTICO (Según el sistema operativo)
+        ========================================================== */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121619; /* Fondo oscuro casi negro */
+                --text-color: #e4e7eb; /* Texto gris claro para no cansar la vista */
+                --border-color: #2a3441; /* Bordes sutiles oscuros */
+                --input-bg: #1e262c; /* Fondo del input ligeramente más claro que el fondo principal */
+                --placeholder-color: #6b7a90; /* Placeholder adaptado */
+                --primary-color: #3b8bc0; /* Un azul apenas más vibrante para contrastar mejor en la oscuridad */
+            }
+
+            /* Opcional: Si tu logo "Simplex.png" tiene letras oscuras y se pierde en el fondo negro, 
+            esta regla invertirá sus colores automáticamente en modo oscuro */
+            /*
+            .logo img {
+                filter: invert(1) hue-rotate(180deg) brightness(1.5);
+            }
+            */
+        }
+
+        /* ==========================================================
+        ESTILOS PARA LA ANIMACIÓN DE CARGA EN EL BOTÓN
+        ========================================================== */
+
+        /* Estado cargando: Oculta el texto "Ingresar" suavemente */
+        .btn-submit.is-loading {
+            color: transparent !important; /* Texto invisible pero mantiene el tamaño */
+            pointer-events: none; /* Desactiva clics mientras carga */
+            position: relative; /* Necesario para posicionar el spinner */
+        }
+
+        /* El Spinner (círculo que gira) */
+        .btn-submit.is-loading::after {
+            content: "";
+            position: absolute;
+            width: 1.25rem; /* Tamaño relativo responsivo */
+            height: 1.25rem;
+            top: 50%;
+            left: 50%;
+            /* Centrado perfecto */
+            transform: translate(-50%, -50%); 
+            
+            /* Estilo visual del círculo */
+            border: 3px solid rgba(255, 255, 255, 0.25); /* Círculo base tenue */
+            border-top-color: #ffffff; /* Parte brillante que gira */
+            border-radius: 50%; /* Lo hace redondo */
+            
+            /* Ejecuta la animación definida abajo */
+            animation: spinButton 0.8s linear infinite; 
+        }
+
+        /* Definición del movimiento de giro */
+        @keyframes spinButton {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* ==========================================================
+        ANIMACIONES DE ENTRADA (Carga de la página)
+        ========================================================== */
+
+        /* 1. Definimos la animación base (Aparecer y subir) */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px); /* Empieza 30px más abajo */
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0); /* Termina en su posición original */
+            }
+        }
+
+        /* 2. Se la aplicamos al Logo */
+        .logo {
+            /* Mantenemos tus estilos anteriores, solo agregamos la animación */
+            animation: fadeInUp 0.8s ease-out forwards; 
+        }
+
+        /* 3. Se la aplicamos al Formulario con un pequeño retraso */
+        .login-form {
+            opacity: 0; /* Lo ocultamos al inicio para que la animación lo muestre */
+            /* La animación dura 0.8s, pero empieza 0.2s después que el logo (efecto cascada) */
+            animation: fadeInUp 0.8s ease-out 0.2s forwards; 
+        }
+
+        /* ==========================================================
+        ANIMACIÓN DE ERROR (Shake / Temblor)
+        ========================================================== */
+
+        /* Definimos el movimiento de sacudida de lado a lado */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        /* Clase que aplicaremos por JavaScript cuando haya un error */
+        .input-group.is-invalid {
+            animation: shake 0.4s ease-in-out; /* Ejecuta el temblor rápido */
+            border-color: #e74c3c !important; /* Borde rojo */
+            background-color: #fdf0ed; /* Fondo rojizo muy suave */
+        }
+
+        /* Ajuste del error para el Modo Oscuro */
+        @media (prefers-color-scheme: dark) {
+            .input-group.is-invalid {
+                background-color: #3b1c1c; /* Fondo rojizo oscuro */
+            }
+        }
+    </style>
 </head>
 <body>
 
-<img id="logo" src="https://i.postimg.cc/FFkMzyCn/Simplex.png" alt="Logo">
+    <div class="main-wrapper">
+        <div class="login-container">
+            <div class="logo">
+                <img src="https://i.postimg.cc/FFkMzyCn/Simplex.png" alt="Logo Simplex">
+            </div>
 
-<input type="password" id="password" placeholder="Contraseña">
-<button onclick="authenticate()">Ingresar</button>
+            <form class="login-form">
+                <div class="input-group">
+                    <div class="icon-left">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                    
+                    <div class="icon-right" id="togglePassword">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </div>
+                </div>
 
-<div class="lds-ring" id="loading">
-  <div></div>
-</div>
+                <button type="submit" class="btn-submit">Ingresar</button>
+            </form>
+        </div>
+    </div>
 
-<script>
-  const AS_URL_BASE = "https://script.google.com/macros/s/AKfycbzxS4XQDQ5bIDm6LYLWGM0AjVtlmQNSY4bwijo2U0_RRFv3ngB3C7doiiO9qo77_rdxEw/exec";
+    <script>
+        const AS_URL_BASE = "https://script.google.com/macros/s/AKfycbzxS4XQDQ5bIDm6LYLWGM0AjVtlmQNSY4bwijo2U0_RRFv3ngB3C7doiiO9qo77_rdxEw/exec";
 
-  function authenticate() {
-    const password = document.getElementById('password').value;
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elementos del DOM
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const loginForm = document.querySelector('.login-form');
+            const submitBtn = document.querySelector('.btn-submit');
+            const inputGroup = document.querySelector('.input-group');
 
-    if (password.length < 1 || password.length > 20) {
-      return;
-    }
+            // --- 1. Lógica de Mostrar/Ocultar Contraseña ---
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function () {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.style.opacity = type === 'text' ? '0.5' : '1';
+                    this.setAttribute('title', type === 'text' ? 'Ocultar' : 'Mostrar');
+                });
+            }
 
-    const url = new URL(window.location.href);
-    const k = url.searchParams.get("k");
+            // --- 2. Función para disparar la animación de error (Temblor) ---
+            function showError() {
+                inputGroup.classList.remove('is-invalid');
+                void inputGroup.offsetWidth; // Truco para reiniciar la animación CSS
+                inputGroup.classList.add('is-invalid');
+                
+                // Vaciamos el input después de un breve momento para que vuelva a intentar
+                setTimeout(() => {
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }, 400);
+            }
 
-    if (k) {
-      document.getElementById("loading").style.display = "inline-block";
-      fetch(`${AS_URL_BASE}?k=${k}&q=${password}`)
-        .then(response => response.text())
-        .then(result => {
-          document.getElementById("loading").style.display = "none";
-          if (result) {
-            document.location.replace(result);
-          } else {
-            alert("Acceso denegado.");
-          }
-        })
-        .catch(err => {
-          document.getElementById("loading").style.display = "none";
-          console.error("Error de conexión:", err);
-          alert("Hubo un error al procesar la solicitud.");
+            // --- 3. Función Principal de Autenticación ---
+            function authenticate() {
+                const password = passwordInput.value;
+
+                // Validación de longitud
+                if (password.length < 1 || password.length > 20) {
+                    showError(); // Hace temblar si está vacío o es muy largo
+                    return;
+                }
+
+                const url = new URL(window.location.href);
+                const k = url.searchParams.get("k");
+
+                if (!k) {
+                    alert("Parámetro 'k' no encontrado en la URL.");
+                    return;
+                }
+
+                // ACTIVAR ANIMACIÓN DE CARGA
+                submitBtn.classList.add('is-loading');
+                submitBtn.disabled = true;
+                inputGroup.classList.remove('is-invalid'); // Limpia errores previos
+
+                // Llamada a Google Apps Script
+                fetch(`${AS_URL_BASE}?k=${k}&q=${encodeURIComponent(password)}`)
+                    .then(response => response.text())
+                    .then(result => {
+                        // DETENER ANIMACIÓN DE CARGA
+                        submitBtn.classList.remove('is-loading');
+                        submitBtn.disabled = false;
+
+                        if (result) {
+                            // Si hay resultado (éxito), redirige a la URL
+                            document.location.replace(result);
+                        } else {
+                            // Acceso denegado (Reemplaza tu alert por el temblor rojo)
+                            showError(); 
+                        }
+                    })
+                    .catch(err => {
+                        // Error de conexión de red
+                        submitBtn.classList.remove('is-loading');
+                        submitBtn.disabled = false;
+                        console.error("Error de conexión:", err);
+                        alert("Hubo un error de conexión. Intenta nuevamente.");
+                    });
+            }
+
+            // --- 4. Escuchar el envío del formulario ---
+            if (loginForm) {
+                // Usar 'submit' captura tanto el clic en el botón como apretar 'Enter'
+                loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault(); // Evita que la página intente recargarse
+                    authenticate();
+                });
+            }
         });
-    } else {
-      alert("Parámetro 'k' no encontrado.");
-    }
-  }
-  
-  document.getElementById('password').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-      authenticate();
-    }
-  });
-</script>
+    </script>
 </body>
 </html>
