@@ -429,9 +429,11 @@
 
                             // Solución al error 404: Solo redirige si es un enlace válido
                             if (result && result.trim().startsWith("http")) {
-                                document.location.replace(result.trim());
+                                document.location.replace(result.trim()); // Aquí redirige (Contraseña correcta)
                             } else {
-                                showError(); 
+                                // Aquí entra si Google respondió "Contraseña incorrecta" o "QR desactualizado"
+                                console.log("Servidor respondió:", result); // Si miras la consola, verás ese texto
+                                showError(); // Hace el temblor rojo
                             }
                         }, tiempoRestante);
                     })
