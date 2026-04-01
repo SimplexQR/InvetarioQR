@@ -197,7 +197,7 @@
 
         /* 2. PANTALLAS DE POCA ALTURA (por ejemplo, móviles en horizontal o portátiles pequeños) */
         /* Este punto de quiebre asegura que el formulario permanezca centrado sin requerir scroll */
-        @media (max-height: 700px) {
+        @media (max-height: 600px) {
             .main-wrapper {
                 min-height: auto;
                 padding: 1rem 0;
@@ -234,44 +234,6 @@
                 filter: invert(1) hue-rotate(180deg) brightness(1.5);
             }
             */
-        }
-
-        /* ==========================================================
-        ESTILOS PARA LA ANIMACIÓN DE CARGA EN EL BOTÓN
-        ========================================================== */
-
-        /* Estado cargando: Oculta el texto "Ingresar" suavemente */
-        .btn-submit.is-loading {
-            color: transparent !important; /* Texto invisible pero mantiene el tamaño */
-            pointer-events: none; /* Desactiva clics mientras carga */
-            position: relative; /* Necesario para posicionar el spinner */
-        }
-
-        /* El Spinner (círculo que gira) */
-        .btn-submit.is-loading::after {
-            content: "";
-            position: absolute;
-            width: 1.25rem; /* Tamaño relativo responsivo */
-            height: 1.25rem;
-            top: 50%;
-            left: 50%;
-            /* Centrado perfecto */
-            transform: translate(-50%, -50%); 
-            
-            /* Estilo visual del círculo */
-            border: 3px solid rgba(255, 255, 255, 0.25); /* Círculo base tenue */
-            border-top-color: #ffffff; /* Parte brillante que gira */
-            border-radius: 50%; /* Lo hace redondo */
-            
-            /* Ejecuta la animación definida abajo */
-            animation: spinButton 0.8s linear infinite; 
-        }
-
-        /* Definición del movimiento de giro */
-        @keyframes spinButton {
-            to {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
         }
 
         /* ==========================================================
@@ -398,8 +360,9 @@
             function authenticate() {
                 const password = passwordInput.value;
 
+                // Validación de longitud
                 if (password.length < 1 || password.length > 20) {
-                    showError(); 
+                    showError(); // Hace temblar si está vacío o es muy largo
                     return;
                 }
 
@@ -411,35 +374,30 @@
                     return;
                 }
 
-                submitBtn.classList.add('is-loading');
                 submitBtn.disabled = true;
-                inputGroup.classList.remove('is-invalid'); 
+                submitBtn.innerText = "Cargando...";
+                inputGroup.classList.remove('is-invalid'); // Limpia errores previos
 
-                const tiempoInicio = Date.now();
-
+                // Llamada a Google Apps Script
                 fetch(`${AS_URL_BASE}?k=${k}&q=${encodeURIComponent(password)}`)
                     .then(response => response.text())
                     .then(result => {
-                        const tiempoTranscurrido = Date.now() - tiempoInicio;
-                        const tiempoRestante = Math.max(0, 1500 - tiempoTranscurrido);
 
-                        setTimeout(() => {
-                            submitBtn.classList.remove('is-loading');
-                            submitBtn.disabled = false;
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = "Ingresar";
 
-                            // Solución al error 404: Solo redirige si es un enlace válido
-                            if (result && result.trim().startsWith("http")) {
-                                document.location.replace(result.trim()); // Aquí redirige (Contraseña correcta)
-                            } else {
-                                // Aquí entra si Google respondió "Contraseña incorrecta" o "QR desactualizado"
-                                console.log("Servidor respondió:", result); // Si miras la consola, verás ese texto
-                                showError(); // Hace el temblor rojo
-                            }
-                        }, tiempoRestante);
+                        if (result) {
+                            // Si hay resultado (éxito), redirige a la URL
+                            document.location.replace(result);
+                        } else {
+                            // Acceso denegado (Reemplaza tu alert por el temblor rojo)
+                            showError(); 
+                        }
                     })
                     .catch(err => {
-                        submitBtn.classList.remove('is-loading');
+                        // Error de conexión de red
                         submitBtn.disabled = false;
+                        submitBtn.innerText = "Ingresar";
                         console.error("Error de conexión:", err);
                         alert("Hubo un error de conexión. Intenta nuevamente.");
                     });
